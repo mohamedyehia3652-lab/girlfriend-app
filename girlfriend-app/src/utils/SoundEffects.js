@@ -1,5 +1,7 @@
 // Web Audio API Sound Synthesizer + Custom Background Music Support with IndexedDB Persistence
 
+import bgMusic from '../assets/kadim-al-saherzeidini-ishqan.mp3'
+
 const DB_NAME = 'LoveAppAudioDB'
 const STORE_NAME = 'audioStore'
 
@@ -82,7 +84,7 @@ class SoundController {
   }
 
   initAudioElement() {
-    const audioUrl = '/kadim-al-saherzeidini-ishqan.mp3'
+    const audioUrl = bgMusic
     this.audioElement = new Audio(audioUrl)
     this.audioElement.preload = 'auto'
     this.audioElement.loop = true

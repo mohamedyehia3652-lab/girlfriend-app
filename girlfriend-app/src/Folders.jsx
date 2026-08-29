@@ -78,14 +78,6 @@ export function Folders() {
 
   const allFolders = [
     ...INITIAL_FOLDERS,
-    {
-      id: 'from_her',
-      title: ' لو عايزة تقوليلي حاجة اكتبيها هنا💌',
-      icon: '✍️',
-      color: '#ec4899',
-      isCustom: true,
-      notes: customNotes.map((n) => n.text)
-    }
   ]
 
   const activeFolder = allFolders.find((f) => f.id === activeFolderId)
@@ -157,91 +149,6 @@ export function Folders() {
     }
   }
 
-  const handleCopyNote = (text, e) => {
-    e.stopPropagation()
-    navigator.clipboard.writeText(text)
-    sounds.playPop()
-    alert('تم نسخ الرسالة إلى الحافظة! 📋✨')
-  }
-
-  const handleCopyAllNotes = () => {
-    if (customNotes.length === 0) {
-      alert('لا توجد رسائل لنسخها بعد! 🌸')
-      return
-    }
-    const text = customNotes
-      .map((n, i) => `${i + 1}. [${n.date || 'تاريخ غير محدد'}] ${n.text}`)
-      .join('\n\n')
-    navigator.clipboard.writeText(text)
-    sounds.playPop()
-    alert('تم نسخ جميع الرسائل بنجاح! 💌✨')
-  }
-
-  const handleExportTxt = () => {
-    if (customNotes.length === 0) {
-      alert('لا توجد رسائل لتصديرها بعد! 🌸')
-      return
-    }
-    const content = `💌 أرشيف رسائل الحب 💌\nتاريخ الحفظ: ${new Date().toLocaleDateString('ar-EG')}\n\n` +
-      customNotes
-        .map((n, i) => `الرسالة #${i + 1} (${n.date || 'بدون تاريخ'}):\n${n.text}\n`)
-        .join('\n----------------------------------------\n\n')
-
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `رسائل_حبيبتي_${new Date().toISOString().slice(0, 10)}.txt`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-    sounds.playChime()
-  }
-
-  const handleExportJSON = () => {
-    if (customNotes.length === 0) {
-      alert('لا توجد رسائل لتصديرها بعد! 🌸')
-      return
-    }
-    const dataStr = JSON.stringify(customNotes, null, 2)
-    const blob = new Blob([dataStr], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `love_messages_backup.json`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-    sounds.playChime()
-  }
-
-  const handleImportJSON = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target.result)
-        if (Array.isArray(imported)) {
-          setCustomNotes((prev) => {
-            const existingIds = new Set(prev.map((n) => n.id))
-            const newItems = imported.filter((n) => !existingIds.has(n.id))
-            return [...newItems, ...prev]
-          })
-          sounds.playFanfare()
-          alert('تم استرجاع الرسائل بنجاح! 💖')
-        } else {
-          alert('الملف غير صالح!')
-        }
-      } catch {
-        alert('حدث خطأ أثناء قراءة ملف النسخة الاحتياطية')
-      }
-    }
-    reader.readAsText(file)
-    e.target.value = ''
-  }
 
   return (
     <div className="folders-container" dir="rtl">
@@ -310,35 +217,7 @@ export function Folders() {
             </div>
 
             <div className="document-divider"></div>
-
-            {/* Custom note form if in her special folder */}
-            {activeFolder.id === 'from_her' && (
-              <form onSubmit={handleAddCustomNote} className="add-note-box">
-                <h4> انا مستني كلام حلو هنا💌</h4>
-                <div className="emoji-picker-row">
-                  {['💌', '💖', '🥰', '🌹', '✨', '🥺', '💍'].map((emoji) => (
-                    <button
-                      key={emoji}
-                      type="button"
-                      className={`emoji-btn ${selectedEmoji === emoji ? 'active' : ''}`}
-                      onClick={() => setSelectedEmoji(emoji)}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-                <textarea
-                  value={newNoteText}
-                  onChange={(e) => setNewNoteText(e.target.value)}
-                  placeholder="اكتبي الفي قلبك هنا ..."
-                  rows={3}
-                  className="note-textarea"
-                />
-                <button type="submit" className="post-note-btn">
-                  اختمي الرسالة واحفظيها 💖
-                </button>
-              </form>
-            )}
+            
 
             {/* Custom Notes Toolbar for Permanent Backup / Actions */}
             {activeFolder.id === 'from_her' && customNotes.length > 0 && (
