@@ -35,7 +35,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Upload built site
+      - name: Upload build
         uses: actions/upload-pages-artifact@v3
         with:
           path: girlfriend-app/girlfriend-app/dist
