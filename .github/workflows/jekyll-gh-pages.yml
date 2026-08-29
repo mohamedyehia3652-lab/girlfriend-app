@@ -1,9 +1,14 @@
-name: Build and run girlfriend-app
+name: Deploy girlfriend-app
 
 on:
   push:
     branches: [main]
   pull_request:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -11,24 +16,36 @@ jobs:
 
     defaults:
       run:
-        working-directory: girlfriend-app
+        working-directory: girlfriend-app/girlfriend-app
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: girlfriend-app/package-lock.json
+          node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build app
         run: npm run build
 
-      - name: Run dev server
-        run: npm run dev -- --host 0.0.0.0
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: girlfriend-app/girlfriend-app/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
