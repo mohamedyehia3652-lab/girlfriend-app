@@ -16,7 +16,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: girlfriend-app/girlfriend-app
+        working-directory: girlfriend-app
 
     steps:
       - name: Checkout repo
@@ -36,7 +36,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: girlfriend-app/girlfriend-app/dist
+          path: girlfriend-app/dist
 
   deploy:
     needs: build
